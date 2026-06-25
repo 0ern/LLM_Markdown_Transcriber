@@ -204,7 +204,7 @@ def main():
                                 if playlist_title == "Web_Source":
                                     playlist_title = fallback_info.get('title', 'Web_Source')
                     except Exception as e:
-                        print(f"{C_RED}[WARNING] Failed to fetch metadata for '{item}': {e}{C_RESET}")
+                        print(f"{C_YELLOW}[WARNING] Failed to fetch metadata for '{item}': {e}{C_RESET}")
                     
     total_videos = len(videos)
     if total_videos == 0:
@@ -216,7 +216,7 @@ def main():
     forbidden_chars = ['\\', '/', ':', '*', '?', '"', '<', '>', ',', '\'', '|', '#', '@', '.', '!']
     safe_playlist_title = playlist_title
     for char in forbidden_chars:
-        safe_playlist_title = safe_playlist_title.replace(char, '_')
+        safe_playlist_title = safe_playlist_title.replace(char, '')
     safe_playlist_title = safe_playlist_title.strip().replace(" ", "_")
 
     # Prevent overwriting by checking if a finalized or multi-part file already exists
@@ -312,6 +312,7 @@ def main():
                     info = ydl.extract_info(video_url, download=True)
                     if info and info.get('description'):
                         video_description = info.get('description').strip()
+                        video_description = video_description.replace('\u2028', '\n').replace('\u2029', '\n')
                     else:
                         video_description = "No caption available."
                     audio_file_path = ydl.prepare_filename(info)
@@ -410,7 +411,7 @@ def main():
                 
             # Increment the aggregate active tracking word register
             current_word_count += incoming_words
-            print(f"{C_GREEN}[OK] Generated. (File size: {current_word_count}/{WORD_LIMIT} words){C_RESET}")
+            print(f"{C_GREEN}[OK] Generated. (File size: {current_word_count}/{WORD_LIMIT} words){C_RESET}\n")
             
         except Exception as e:
             # Capture deep engine parsing errors and log the failure inside the markdown file to keep output structured
