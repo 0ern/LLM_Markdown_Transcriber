@@ -36,7 +36,7 @@ os.environ["PATH"] = os.path.pathsep.join(search_paths) + os.path.pathsep + os.e
 
 # Set artificial intelligence neural network model version configuration
 # OPTIONS: "tiny", "base", "small", "medium", "large-v3", "turbo"
-MODEL_SIZE = "large-v3"
+MODEL_SIZE = "turbo"
 TEXT_PROMPT = "Clean transcription with accurate punctuation and capitalization."
 
 def main():
