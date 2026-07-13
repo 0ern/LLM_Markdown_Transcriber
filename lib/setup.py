@@ -6,9 +6,7 @@ import ctypes
 # Initialize Windows Virtual Terminal Processing to enable ANSI color codes
 os.system('')
 
-# =====================================================================
 # TERMINAL ANSI COLOR CONFIGURATION CONSTANTS (DARKGRAY THEME)
-# =====================================================================
 C_DARKCYAN = "\033[36m"
 C_DARKGRAY = "\033[90m"
 C_RED = "\033[91m"

@@ -8,9 +8,7 @@ from faster_whisper import WhisperModel
 # Initialize Windows Virtual Terminal Processing to enable ANSI color codes
 os.system('')
 
-# =====================================================================
 # TERMINAL ANSI COLOR CONFIGURATION CONSTANTS (DARKCYAN THEME)
-# =====================================================================
 C_DARKCYAN = "\033[36m"
 C_DARKGRAY = "\033[90m"
 C_RED = "\033[91m"
@@ -38,7 +36,7 @@ os.environ["PATH"] = os.path.pathsep.join(search_paths) + os.path.pathsep + os.e
 
 # Set artificial intelligence neural network model version configuration
 # OPTIONS: "tiny", "base", "small", "medium", "large-v3", "turbo"
-MODEL_SIZE = "turbo"
+MODEL_SIZE = "large-v3"
 TEXT_PROMPT = "Clean transcription with accurate punctuation and capitalization."
 
 def main():
@@ -46,10 +44,10 @@ def main():
     os.makedirs(os.path.join(root_dir, "Input_Documents"), exist_ok=True)
 
     # Print engine readiness notification to the console
-    print(f"Engine initialized. Ready for universal processing.")
+    print(f"Engine initialized. Ready for universal processing.\n")
     
     # Prompt the user to enter a URL or Drag & Drop a local file directly into the console
-    source_input = input(f"\n{C_DARKCYAN}Paste URL (Playlist/Video/Reel/Post), Drag and Drop a local file here or simply press Enter to process files in 'Input_Documents' folder: {C_RESET}").strip()
+    source_input = input(f"{C_DARKCYAN}Paste URL (Playlist/Video/Reel/Post), Drag and Drop a local file here or simply press Enter to process files in 'Input_Documents' folder: {C_RESET}").strip()
     
     # Clean up potential quotation marks automatically added by Windows during file drag-and-drop actions
     source_input = source_input.strip('"').strip("'").strip()
@@ -89,22 +87,22 @@ def main():
     models_dir = os.path.join(lib_dir, "Whisper_models")
     os.makedirs(models_dir, exist_ok=True)
 
-    print(f"\n{C_DARKCYAN}[1/4] Initializing machine learning model...{C_RESET}")
+    print(f"\n{C_DARKCYAN}INITIALIZING MACHINE LEARNING MODEL{C_RESET}")
     try:
         # Attempt to force Nvidia GPU hardware acceleration (CUDA)
         model = WhisperModel(MODEL_SIZE, device="cuda", compute_type="float16", download_root=models_dir)
-        print(f"{C_GREEN}[OK] Model successfully stored in VRAM (Nvidia GPU)!{C_RESET}")
+        print(f"{C_GREEN}[OK] Model successfully stored in VRAM (Nvidia GPU)!{C_RESET}\n")
     except Exception as gpu_error:
-        print(f"{C_YELLOW}[WARNING] Nvidia CUDA not available. Falling back to CPU mode...{C_RESET}")
+        print(f"{C_YELLOW}[WARNING] Nvidia CUDA not available. Falling back to CPU mode...{C_RESET}\n")
         try:
             # Fallback to CPU execution layout with optimized integer quantization
             model = WhisperModel(MODEL_SIZE, device="cpu", compute_type="int8", download_root=models_dir)
-            print(f"{C_GREEN}[OK] Model successfully loaded into System RAM (CPU Mode)!{C_RESET}")
+            print(f"{C_GREEN}[OK] Model successfully loaded into System RAM (CPU Mode)!{C_RESET}\n")
         except Exception as cpu_error:
-            print(f"\n{C_RED}[CRITICAL ERROR] Failed to initialize machine learning engine: {cpu_error}{C_RESET}")
+            print(f"{C_RED}[CRITICAL ERROR] Failed to initialize machine learning engine: {cpu_error}{C_RESET}\n")
             return
 
-    print(f"\n{C_DARKCYAN}[2/4] Parsing input source metadata...{C_RESET}")
+    print(f"{C_DARKCYAN}PARSING INPUT SOURCE METADATA{C_RESET}")
     
     # Custom quiet logger to suppress noisy warnings (like Instagram csrf tokens)
     class YTDLQuietLogger:
@@ -131,9 +129,7 @@ def main():
         # Single URL or single local media file path
         inputs = [source_input]
 
-    # =====================================================================
     # AUTOMATIC URL CLEANING / SANITIZATION SYSTEM
-    # =====================================================================
     cleaned_inputs = []
     for item in inputs:
         # Only clean if it's a web link (not a local file path)
@@ -143,6 +139,7 @@ def main():
                     item = item.split(param)[0]
         cleaned_inputs.append(item)
     inputs = cleaned_inputs
+    [source_link] = inputs
 
     videos = []
     extraction_settings = {
@@ -204,16 +201,16 @@ def main():
                                 if playlist_title == "Web_Source":
                                     playlist_title = fallback_info.get('title', 'Web_Source')
                     except Exception as e:
-                        print(f"{C_YELLOW}[WARNING] Failed to fetch metadata for '{item}': {e}{C_RESET}")
+                        print(f"{C_YELLOW}[WARNING] Failed to fetch metadata for '{item}': {e}{C_RESET}\n")
                     
     total_videos = len(videos)
     if total_videos == 0:
-        print(f"{C_RED}[ERROR] No valid videos or links could be resolved. Exiting...{C_RESET}")
+        print(f"{C_RED}[ERROR] No valid videos or links could be resolved. Exiting...{C_RESET}\n")
         return
-    print(f"{C_GREEN}[OK] Located {total_videos} remote item(s) in the download queue.{C_RESET}")
+    print(f"{C_GREEN}[OK] Located {total_videos} remote item(s) in the download queue.{C_RESET}\n")
 
     # Filter and sanitize dangerous character entities from the playlist title string
-    forbidden_chars = ['\\', '/', ':', '*', '?', '"', '<', '>', ',', '\'', '|', '#', '@', '.', '!']
+    forbidden_chars = ['\\', '/', ':', '*', '?', '"', '<', '>', ',', '\'', '|', '#', '@', '.', '!', 'ª', '°']
     safe_playlist_title = playlist_title
     for char in forbidden_chars:
         safe_playlist_title = safe_playlist_title.replace(char, '')
@@ -227,7 +224,7 @@ def main():
         safe_playlist_title = f"{base_title}_version_{version_counter}"
         version_counter += 1
 
-    print(f"\n{C_DARKCYAN}[3/4] Starting sequential audio processing loop...{C_RESET}")
+    print(f"{C_DARKCYAN}STARTING SEQUENTIAL AUDIO PROCESSING LOOP{C_RESET}")
     
     # Initialize index segmentation variables for the dynamic output tracker logic
     current_part = 1
@@ -249,9 +246,9 @@ def main():
             with open(current_output_file, "w", encoding="utf-8") as f:
                 # Cleaner header title block omitting Part 1 text unless rolled over
                 part_suffix = f" (Part {current_part})" if current_part > 1 else ""
-                f.write(f"# Transcript Collection: {playlist_title}{part_suffix}\n")
-                f.write("\n=============\n\n")
-            print(f"\n{C_DARKGRAY}[INFO] Initializing document volume: Markdown_output/{filename}{C_RESET}")
+                f.write(f"# Transcript Collection: {playlist_title}{part_suffix}\nSource link: {source_link}\n\n")
+                f.write("=============\n\n")
+            print(f"{C_DARKGRAY}[INFO] Initializing document volume: Output_Markdown/{filename}{C_RESET}\n")
 
         # Extract structural parameters safely using safe fallbacks for missing dictionary blocks
         video_id = video.get('id')
@@ -326,7 +323,7 @@ def main():
                 except Exception as e:
                     # Check if a caption was successfully recovered despite the lack of transcribable audio (e.g., standard photo posts)
                     if video_description and video_description != "No caption available (Local file or not found)." and video_description != "No caption available.":
-                        print(f"{C_DARKGRAY}[INFO] Caption successfully extracted for non-video asset.{C_RESET}")
+                        print(f"{C_DARKGRAY}[INFO] Caption successfully extracted for non-video asset.{C_RESET}\n")
                         with open(current_output_file, "a", encoding="utf-8") as f:
                             f.write(f"## Item No. {index}\n")
                             f.write(f"## Title: {video_title}\n")
@@ -391,9 +388,9 @@ def main():
                 
                 # Create the next rollover volume block header
                 with open(current_output_file, "w", encoding="utf-8") as f:
-                    f.write(f"# Transcript Collection: {playlist_title} (Part {current_part})\n")
-                    f.write("\n=============\n\n")
-                print(f"{C_DARKGRAY}[INFO] Initializing document volume: Markdown_output/{filename}{C_RESET}")
+                    f.write(f"# Transcript Collection: {playlist_title} (Part {current_part})\nSource link: {source_link}\n\n")
+                    f.write("=============\n\n")
+                print(f"{C_DARKGRAY}[INFO] Initializing document volume: Output_Markdown/{filename}{C_RESET}")
 
             # Append finalized clean text content blocks inside active open stream document
             with open(current_output_file, "a", encoding="utf-8") as f:
@@ -441,11 +438,11 @@ def main():
                 if os.path.exists(final_path):
                     os.remove(final_path)
                 os.rename(part1_path, final_path)
-                print(f"\n{C_DARKGRAY}[INFO] Suffix optimized. Final document name: Markdown_output/{final_filename}{C_RESET}")
+                print(f"{C_DARKGRAY}[INFO] Suffix optimized. Final document name: Output_Markdown/{final_filename}{C_RESET}\n")
             except Exception as e:
-                print(f"\n{C_YELLOW}[WARNING] Could not optimize document suffix layout: {e}{C_RESET}")
+                print(f"{C_YELLOW}[WARNING] Could not optimize document suffix layout: {e}{C_RESET}\n")
 
-    print(f"\n{C_DARKCYAN}[4/4] Execution workflow completed! Documents generated inside 'Markdown_output' directory.{C_RESET}")
+    print(f"{C_DARKCYAN}EXECUTION WORKFLOW COMPLETED! DOCUMENTS GENERATED INSIDE 'Output_Markdown' DIRECTORY.{C_RESET}")
 
 if __name__ == "__main__":
     main()

@@ -2,9 +2,7 @@ import os
 import sys
 import subprocess
 
-# =====================================================================
 # Terminal ANSI color configuration constants (Matching DARKCYAN/DARKGRAY theme)
-# =====================================================================
 C_DARKCYAN = "\033[36m"
 C_DARKGRAY = "\033[90m"
 C_RED = "\033[91m"
@@ -84,14 +82,14 @@ def convert_single_file(file_path, output_dir, lib_dir):
     # Resolve the path to the local MarkItDown executable binary
     markitdown_exe = os.path.join(lib_dir, "MarkItDown", ".venv", "Scripts", "markitdown.exe")
     
-    print(f"\n{C_DARKGRAY}[CONVERTING] Processing document: {os.path.basename(file_path)}{C_RESET}")
+    print(f"\n{C_DARKCYAN}[CONVERTING] Processing document: {os.path.basename(file_path)}{C_RESET}")
     
     try:
         # Run the MarkItDown executable via python subprocess
         result = subprocess.run([markitdown_exe, file_path, "-o", output_file_path], capture_output=True, text=True)
         
         if result.returncode == 0:
-            print(f"{C_GREEN}[OK] Successfully converted to: Markdown_output/{base_name}.md{C_RESET}")
+            print(f"{C_GREEN}[OK] Successfully converted to: Output_Markdown/{base_name}.md{C_RESET}")
         else:
             print(f"{C_RED}[ERROR] MarkItDown failed to convert file: {result.stderr.strip()}{C_RESET}")
     except Exception as e:
